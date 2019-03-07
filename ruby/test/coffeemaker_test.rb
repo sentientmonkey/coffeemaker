@@ -8,7 +8,9 @@ class MockCoffeeMakerAPI < CoffeeMakerAPI
     :warmer_plate_status,
     :brew_button_status,
     :boiler_state,
-    :warmer_state
+    :warmer_state,
+    :indicator_state,
+    :relief_valve_state
   )
 
   def initialize
@@ -71,5 +73,54 @@ class CoffeeMakerTest < Minitest::Test
     @api.warmer_plate_status = WarmerPlateStatus::POT_EMPTY
     @subject.update
     assert_equal WarmerState::OFF, @api.warmer_state
+  end
+
+  def test_will_shut_off_warmer_when_pot_removed
+    @api.warmer_plate_status = WarmerPlateStatus::WARMER_EMPTY
+    @subject.update
+    assert_equal WarmerState::OFF, @api.warmer_state
+  end
+
+  def start_brew
+    @api.brew_button_status = BrewButtonStatus::PUSHED
+    @subject.update
+  end
+
+  def finish_brew
+    @api.warmer_plate_status = WarmerPlateStatus::POT_NOT_EMPTY
+    @api.boiler_status = BoilerStatus::EMPTY
+    @subject.update
+  end
+
+  def brew_cycle
+    start_brew
+    finish_brew
+  end
+
+  def test_will_turn_on_indicator_light_after_coffee_is_done_brewing
+    brew_cycle
+    assert_equal IndicatorState::ON, @api.indicator_state
+  end
+
+  def remove_pot
+    @api.warmer_plate_status = WarmerPlateStatus::WARMER_EMPTY
+    @subject.update
+  end
+
+  def test_turn_off_indicator_light_when_brewed_coffee_removed
+    brew_cycle
+    remove_pot
+    assert_equal IndicatorState::OFF, @api.indicator_state
+  end
+
+  def test_relief_valve_closed_while_brewing
+    start_brew
+    assert_equal ReliefValveState::CLOSED, @api.relief_valve_state
+  end
+
+  def test_interrupt_brewing_if_pot_removed
+    start_brew
+    remove_pot
+    assert_equal ReliefValveState::OPEN, @api.relief_valve_state
   end
 end

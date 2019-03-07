@@ -30,7 +30,7 @@ module IndicatorState
   OFF = :off
 end
 
-module RelieveValveState
+module ReliefValveState
   OPEN = :open
   CLOSED = :closed
 end
@@ -81,5 +81,5 @@ class CoffeeMakerAPI
   # the coffee filter. When the valve is open, the steam
   # in the boiler escapes into the environment, and the
   # water in the boiler will not spray out over the filter.
-  def relief_valve_state=(relieve_valve_state); end
+  def relief_valve_state=(relief_valve_state); end
 end
