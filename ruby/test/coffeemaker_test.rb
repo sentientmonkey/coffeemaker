@@ -7,7 +7,8 @@ class MockCoffeeMakerAPI < CoffeeMakerAPI
     :boiler_status,
     :warmer_plate_status,
     :brew_button_status,
-    :boiler_state
+    :boiler_state,
+    :warmer_state
   )
 
   def initialize
@@ -58,5 +59,17 @@ class CoffeeMakerTest < Minitest::Test
     @api.boiler_status = BoilerStatus::EMPTY
     @subject.update
     assert_equal BoilerState::OFF, @api.boiler_state
+  end
+
+  def test_will_keep_coffee_warm_when_coffeepot_has_coffee
+    @api.warmer_plate_status = WarmerPlateStatus::POT_NOT_EMPTY
+    @subject.update
+    assert_equal WarmerState::ON, @api.warmer_state
+  end
+
+  def test_will_shut_off_warmer_when_pot_is_empty
+    @api.warmer_plate_status = WarmerPlateStatus::POT_EMPTY
+    @subject.update
+    assert_equal WarmerState::OFF, @api.warmer_state
   end
 end
