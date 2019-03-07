@@ -3,6 +3,7 @@ require "./lib/coffeemaker_api.rb"
 class CoffeeMaker
   def initialize api
     @event_bus = []
+    @hardware = []
     boiler = Boiler.new api, @event_bus
     warmer = Warmer.new api, @event_bus
     light = Light.new api, @event_bus
@@ -59,10 +60,22 @@ class CoffeeMaker
       end
     end
 
+    def brew_button_on?
+      @api.brew_button_status == BrewButtonStatus::PUSHED
+    end
+
+    def empty_pot?
+      @api.warmer_plate_status == WarmerPlateStatus::POT_EMPTY
+    end
+
+    def boiler_full?
+      @api.boiler_status == BoilerStatus::NOT_EMPTY
+    end
+
     def ready_to_brew?
-      @api.brew_button_status == BrewButtonStatus::PUSHED &&
-        @api.warmer_plate_status == WarmerPlateStatus::POT_EMPTY &&
-        @api.boiler_status == BoilerStatus::NOT_EMPTY
+      brew_button_on? &&
+        empty_pot? &&
+        boiler_full?
     end
   end
 
