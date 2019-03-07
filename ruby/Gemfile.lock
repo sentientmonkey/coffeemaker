@@ -1,0 +1,19 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    ZenTest (4.11.2)
+    autotest (4.4.6)
+      ZenTest (>= 4.4.1)
+    minitest (5.11.3)
+    rake (12.3.2)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  autotest
+  minitest
+  rake
+
+BUNDLED WITH
+   1.17.2
