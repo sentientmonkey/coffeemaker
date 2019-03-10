@@ -1,6 +1,6 @@
 require "minitest/autorun"
 require "minitest/pride"
-require "./lib/coffeemaker"
+require "./lib/coffeemaker_rx"
 
 class MockCoffeeMakerAPI < CoffeeMakerAPI
   attr_accessor(
