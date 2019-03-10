@@ -13,8 +13,7 @@ class MockCoffeeMakerAPI < CoffeeMakerAPI
     :relief_valve_state
   )
 
-  def initialize
-  end
+  def initialize; end
 
   def set_defaults!
     self.brew_button_status = BrewButtonStatus::NOT_PUSHED

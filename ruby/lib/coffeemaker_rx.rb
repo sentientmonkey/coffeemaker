@@ -4,16 +4,24 @@ require "observer"
 class CoffeeMaker
   include Observable
 
-  def observer type, &blk
-    @events << [type, blk]
+  def initialize api
+    add_hardware api
+    add_events api
   end
 
-  def initialize api
-    @events = []
+  def add_hardware api
     Boiler.new self, api
     Indicator.new self, api
     Warmer.new self, api
     ReliefValve.new self, api
+  end
+
+  def observer type, &blk
+    @events << [type, blk]
+  end
+
+  def add_events api
+    @events = []
     observer(:warmer_plate_status) { api.warmer_plate_status }
     observer(:boiler_status) { api.boiler_status }
     observer(:brew_button_status) { api.brew_button_status }
@@ -59,6 +67,13 @@ class CoffeeMaker
   end
 
   class Indicator < HardwareObserver
+    def initialize *args
+      @is_brewing = false
+      @fresh_pot = false
+      @has_water = false
+      super
+    end
+
     def on_boiler_status value
       @has_water = value == BoilerStatus::NOT_EMPTY
       if @is_brewing && value == BoilerStatus::EMPTY
